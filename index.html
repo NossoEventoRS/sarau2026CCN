@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha de Inscrição - SARAU 2026</title>
+
+<style>
+:root {
+  --rosa-fundo: #fbefee;
+  --rosa-claro: #fde9e7;
+  --rosa-borda: #f0bcb6;
+  --rosa-medio: #e08e86;
+  --rosa-forte: #b84a46;   /* títulos e botões (contraste com texto branco) */
+  --rosa-hover: #f2a29b;
+  --texto: #4a2d2b;
+}
+
+header { width: 100%; margin: 0; padding: 0; }
+button { user-select: none; }
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--rosa-fundo);
+  color: var(--texto);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Imagem de fundo: camada fixa (funciona em PC, tablet e celular, inclusive iOS) */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: -1;
+  background-color: var(--rosa-fundo);
+  background-image: url('https://raw.githubusercontent.com/NossoEventoRS/Imagens/refs/heads/main/Prenda%20Ga%C3%BAcha%20em%20Cen%C3%A1rio%20R%C3%BAstico.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Banner superior */
+.cabecalho {
+  width: 100%;
+  height: 180px;
+  background-image: url('https://raw.githubusercontent.com/NossoEventoRS/Imagens/refs/heads/main/1%C2%BA%20Sarau%20de%20Chinocas%20Ga%C3%BAcho.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+main {
+  max-width: 1100px;
+  width: calc(100% - 24px);
+  margin: 20px auto;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 12px rgba(184, 74, 70, .2);
+  box-sizing: border-box;
+}
+
+.section-title {
+  background: var(--rosa-forte);
+  color: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 30px;
+  font-size: 18px;
+}
+.section-title:first-child { margin-top: 0; }
+
+.category-box {
+  border: 2px solid var(--rosa-borda);
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 15px;
+  background-color: #ffffff;
+  overflow-x: auto;
+}
+
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+
+td {
+  border: 1px solid var(--rosa-borda);
+  padding: 8px;
+  font-size: 14px;
+  text-align: left;
+  vertical-align: middle;
+}
+td.rotulo { background: var(--rosa-claro); font-weight: bold; width: 18%; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #dcb5b1;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 14px;
+}
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--rosa-medio);
+  border-color: var(--rosa-medio);
+}
+textarea { resize: vertical; min-height: 110px; }
+
+.contador-chars { font-size: 12px; color: #8a6360; text-align: right; margin-top: 4px; }
+
+/* Foto */
+.foto-area { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.foto-area input[type="file"] { background: var(--rosa-claro); }
+#previaFoto {
+  display: none;
+  max-width: 180px;
+  max-height: 240px;
+  border-radius: 10px;
+  border: 2px solid var(--rosa-borda);
+  object-fit: cover;
+}
+.dica { font-size: 12px; color: #8a6360; }
+
+/* Botões finais */
+.botoes-final {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 40px auto 0 auto;
+  max-width: 600px;
+}
+@media (min-width: 576px) {
+  .botoes-final { flex-direction: row; justify-content: center; }
+}
+
+.btn-submit, .btn-voltar {
+  width: 100%;
+  padding: 14px;
+  background: var(--rosa-forte);
+  color: white;
+  border: none;
+  font-size: 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  font-weight: bold;
+  box-sizing: border-box;
+}
+.btn-submit:hover, .btn-voltar:hover { background: var(--rosa-hover); color: #3d1613; transition: 0.2s; }
+.btn-submit:disabled { opacity: .6; cursor: not-allowed; }
+
+.loading-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(255, 246, 245, 0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+  text-align: center;
+  padding: 20px;
+}
+
+footer {
+  text-align: center;
+  margin: 20px auto;
+  font-size: 12px;
+  color: #7a5350;
+  padding: 10px;
+}
+
+#contadorInscricao {
+  display: none;
+  width: 100%;
+  background: linear-gradient(90deg, #f6c6c1, var(--rosa-forte));
+  color: white;
+  text-align: center;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  box-sizing: border-box;
+}
+@media (min-width: 576px) {
+  #contadorInscricao { padding: 18px; font-size: 20px; }
+}
+
+/* ======================================================
+   CELULARES (MOBILE): tabela verticalizada
+   ====================================================== */
+@media (max-width: 768px) {
+  main { padding: 14px; width: calc(100% - 16px); margin: 12px auto; }
+
+  #formInscricao table,
+  #formInscricao tbody,
+  #formInscricao td,
+  #formInscricao tr { display: block; }
+
+  #formInscricao tr {
+    border: 1px solid var(--rosa-borda);
+    margin-bottom: 10px;
+    background-color: #fffaf9;
+    border-radius: 8px;
+    padding: 8px;
+  }
+
+  #formInscricao td {
+    border: none;
+    padding: 4px 0;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+  #formInscricao td.rotulo { background: none; padding-bottom: 0; color: var(--rosa-forte); }
+
+  input, select, textarea { width: 100% !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+    <h2 style="color: var(--rosa-forte);">Processando inscrição...</h2>
+    <p>Aguarde, estamos salvando os dados e enviando o e-mail de confirmação...</p>
+</div>
+
+<header>
+  <div class="cabecalho" role="img" aria-label="1º Sarau de Chinocas Gaúcho"></div>
+  <div id="contadorInscricao">⏳ Encerramento das inscrições... <span id="tempoRestante"></span></div>
+</header>
+
+<main>
+<form id="formInscricao" novalidate>
+
+<div class="section-title">Dados da Entidade</div>
+<div class="category-box">
+<table>
+<tr>
+  <td class="rotulo">Entidade *</td>
+  <td colspan="3"><input id="entidade" required></td>
+</tr>
+<tr>
+  <td class="rotulo">RT *</td>
+  <td>
+    <select id="rt" required>
+      <option value="">Selecione</option>
+      <script>for (let i = 1; i <= 30; i++) document.write(`<option>${i}ª RT</option>`);</script>
+    </select>
+  </td>
+  <td class="rotulo">Patrão *</td>
+  <td><input id="patrao" required></td>
+</tr>
+</table>
+</div>
+
+<div class="section-title">Dados do Participante</div>
+<div class="category-box">
+<table>
+<tr>
+  <td class="rotulo">Nome *</td>
+  <td colspan="3"><input id="nome" required placeholder="Nome completo" autocomplete="name"></td>
+</tr>
+<tr>
+  <td class="rotulo">CPF *</td>
+  <td><input id="cpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00"></td>
+  <td class="rotulo">Data de nascimento *</td>
+  <td><input id="nascimento" required type="date"></td>
+</tr>
+<tr>
+  <td class="rotulo">Telefone *</td>
+  <td><input id="telefone" required type="tel" inputmode="tel" maxlength="15" placeholder="(00) 00000-0000" autocomplete="tel"></td>
+  <td class="rotulo">Email *</td>
+  <td><input id="email" required type="email" placeholder="seuemail@exemplo.com" autocomplete="email"></td>
+</tr>
+<tr>
+  <td class="rotulo">Nome do Padrinho *</td>
+  <td colspan="3"><input id="padrinho" required></td>
+</tr>
+<tr>
+  <td class="rotulo">Breve relato tradicionalista *</td>
+  <td colspan="3">
+    <textarea id="relato" required maxlength="1000" placeholder="Conte brevemente sua trajetória no tradicionalismo."></textarea>
+    <div class="contador-chars"><span id="cntRelato">0</span>/1000</div>
+  </td>
+</tr>
+<tr>
+  <td class="rotulo">Uma frase marcante em sua vida *</td>
+  <td colspan="3">
+    <textarea id="frase" required maxlength="300" style="min-height:70px;" placeholder="Uma frase que marcou sua vida."></textarea>
+    <div class="contador-chars"><span id="cntFrase">0</span>/300</div>
+  </td>
+</tr>
+<tr>
+  <td class="rotulo">Foto (pilchado) *</td>
+  <td colspan="3">
+    <div class="foto-area">
+      <input id="foto" type="file" accept="image/jpeg,image/png,image/webp" required>
+      <span class="dica">Formatos JPG, PNG ou WEBP, até 5 MB.</span>
+      <img id="previaFoto" alt="Prévia da foto selecionada">
+    </div>
+  </td>
+</tr>
+</table>
+</div>
+
+<div class="botoes-final">
+  <button type="button" class="btn-submit" id="btnEnviar" onclick="enviarInscricao()">ENVIAR INSCRIÇÃO</button>
+  <a class="btn-voltar" id="btnVoltar" href="#">VOLTAR AO SITE</a>
+</div>
+</form>
+</main>
+
+<footer>Sistema de Inscrição © 2026</footer>
+
+<script>
+// ===== CONFIGURAÇÕES (preencher na etapa do Google Script) =====
+const URL_GS = "";                 // URL do Web App do Google Apps Script
+const URL_SITE = "";               // link do site do evento (botão "Voltar ao site")
+const ENCERRAMENTO = null;         // ex.: '2026-08-08T23:59:59-03:00' (null = sem contador)
+const TAMANHO_MAX_FOTO = 5 * 1024 * 1024; // 5 MB
+// ================================================================
+
+if (URL_SITE) document.getElementById("btnVoltar").href = URL_SITE;
+
+/* ---------- Contador de encerramento (opcional) ---------- */
+let intervaloCronometro = null;
+function atualizarContador() {
+    const diff = new Date(ENCERRAMENTO).getTime() - Date.now();
+    const main = document.querySelector("main");
+
+    if (diff <= 0) {
+        clearInterval(intervaloCronometro);
+        main.innerHTML = `
+            <div style="text-align:center; padding:50px 0;">
+                <h1 style="color:var(--rosa-forte); font-size:36px;">INSCRIÇÕES ENCERRADAS</h1>
+                <span style="font-size:20px;">SARAU 2026</span>
+            </div>`;
+        document.getElementById("contadorInscricao").style.display = "none";
+        return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById("tempoRestante").textContent = `${d}d ${h}h ${m}m ${s}s`;
+}
+if (ENCERRAMENTO) {
+    document.getElementById("contadorInscricao").style.display = "block";
+    intervaloCronometro = setInterval(atualizarContador, 1000);
+    atualizarContador();
+}
+
+/* ---------- Máscaras ---------- */
+document.getElementById("cpf").addEventListener("input", e => {
+    let v = e.target.value.replace(/\D/g, "").slice(0, 11);
+    v = v.replace(/(\d{3})(\d)/, "$1.$2")
+         .replace(/(\d{3})(\d)/, "$1.$2")
+         .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    e.target.value = v;
+});
+
+document.getElementById("telefone").addEventListener("input", e => {
+    let v = e.target.value.replace(/\D/g, "").slice(0, 11);
+    if (v.length > 10)      v = v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+    else if (v.length > 6)  v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+    else if (v.length > 2)  v = v.replace(/(\d{2})(\d{0,5})/, "($1) $2");
+    else if (v.length > 0)  v = v.replace(/(\d{0,2})/, "($1");
+    e.target.value = v;
+});
+
+/* ---------- Contadores de caracteres ---------- */
+[["relato", "cntRelato"], ["frase", "cntFrase"]].forEach(([campo, cnt]) => {
+    const el = document.getElementById(campo);
+    el.addEventListener("input", () => document.getElementById(cnt).textContent = el.value.length);
+});
+
+document.getElementById("nascimento").max = new Date().toISOString().split("T")[0];
+
+/* ---------- Validações ---------- */
+function cpfValido(cpf) {
+    cpf = cpf.replace(/\D/g, "");
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+    for (let t = 9; t < 11; t++) {
+        let soma = 0;
+        for (let i = 0; i < t; i++) soma += parseInt(cpf[i]) * (t + 1 - i);
+        const dig = ((soma * 10) % 11) % 10;
+        if (dig !== parseInt(cpf[t])) return false;
+    }
+    return true;
+}
+
+/* ---------- Foto: prévia e leitura em base64 ---------- */
+document.getElementById("foto").addEventListener("change", e => {
+    const arq = e.target.files[0];
+    const img = document.getElementById("previaFoto");
+    if (!arq) { img.style.display = "none"; return; }
+
+    if (arq.size > TAMANHO_MAX_FOTO) {
+        alert("A foto deve ter no máximo 5 MB.");
+        e.target.value = "";
+        img.style.display = "none";
+        return;
+    }
+    img.src = URL.createObjectURL(arq);
+    img.style.display = "block";
+});
+
+function lerArquivoBase64(arquivo) {
+    return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result.split(",")[1]);
+        r.onerror = () => reject(new Error("Não foi possível ler a foto."));
+        r.readAsDataURL(arquivo);
+    });
+}
+
+/* ---------- Envio ---------- */
+async function enviarInscricao() {
+    const form = document.getElementById("formInscricao");
+    const btn = document.getElementById("btnEnviar");
+
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    if (!cpfValido(document.getElementById("cpf").value)) {
+        alert("CPF inválido. Confira os números digitados.");
+        document.getElementById("cpf").focus();
+        return;
+    }
+    if (!URL_GS) {
+        alert("O envio ainda não foi configurado (URL do Google Script pendente).");
+        return;
+    }
+
+    document.getElementById("loading").style.display = "flex";
+    btn.disabled = true;
+
+    try {
+        const arquivo = document.getElementById("foto").files[0];
+        const fotoBase64 = await lerArquivoBase64(arquivo);
+
+        const payload = {
+            entidade: document.getElementById("entidade").value.trim(),
+            rt: document.getElementById("rt").value,
+            patrao: document.getElementById("patrao").value.trim(),
+            nome: document.getElementById("nome").value.trim(),
+            cpf: document.getElementById("cpf").value,
+            nascimento: document.getElementById("nascimento").value,
+            telefone: document.getElementById("telefone").value,
+            email: document.getElementById("email").value.trim(),
+            padrinho: document.getElementById("padrinho").value.trim(),
+            relato: document.getElementById("relato").value.trim(),
+            frase: document.getElementById("frase").value.trim(),
+            foto: { nome: arquivo.name, tipo: arquivo.type, base64: fotoBase64 }
+        };
+
+        await fetch(URL_GS, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify(payload)
+        });
+
+        alert("✅ Inscrição enviada!\nVerifique o e-mail de confirmação em alguns instantes.");
+        location.reload();
+    } catch (err) {
+        alert("❌ Erro ao enviar: " + err.message);
+        document.getElementById("loading").style.display = "none";
+        btn.disabled = false;
+    }
+}
+</script>
+</body>
+</html>
